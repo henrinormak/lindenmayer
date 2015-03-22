@@ -9,3 +9,6 @@ All examples of systems come from Wikipedia.
 
 Author: Henri Normak - [@henrinormak](https://twitter.com/henrinormak)
 
+## Future work
+
+It might be interesting to expand this to include stochastic rules and make it more applicable for rendering trees and plants as described in [The Algorithmic Beauty of Plants](http://algorithmicbotany.org/papers/abop/abop.pdf). It would also be cool to have a way of evaluating expressions within replacement rules, such as "Move forward 0.2 of previous unit size". Similarly, it would also be interesting to allow more customisation in terms of colours of specific lines etc, not only would that allow more interesting visualisation, it would also help people understand how the rules are evaluated.
