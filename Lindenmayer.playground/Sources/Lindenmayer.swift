@@ -6,7 +6,7 @@ public enum LindenmayerDirection: Equatable {
     case Left
 }
 
-public enum LindenmayerRule: Equatable, Printable {
+public enum LindenmayerRule: Equatable, CustomStringConvertible {
     case Move
     case Draw
     case Turn(LindenmayerDirection, Double)
@@ -97,7 +97,7 @@ public struct Lindenmayer {
         let state = self.evolve(generations, state: self.start)
         
         var result = [LindenmayerRule]()
-        for character in state {
+        for character in state.characters {
             if let rule = self.variables[String(character)] where rule != .Ignore {
                 result.append(rule)
             }
@@ -114,7 +114,7 @@ public struct Lindenmayer {
         
         // Expand each variable with its corresponding rule (or itself)
         var result: String = ""
-        for character in state {
+        for character in state.characters {
             if let rule = rules[String(character)] {
                 result += rule
             } else {

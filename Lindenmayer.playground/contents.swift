@@ -11,7 +11,6 @@
 
 import UIKit
 
-
 //: The code is split into two files, a view that can render a set of rules constructed from an L-System
 //: And a struct defining the system itself, which can be expanded into an array of rules for a given amount of generations
 let view = LindenmayerView(frame: CGRectMake(0, 0, 600, 600))

@@ -48,7 +48,7 @@ public class LindenmayerView: UIView {
         self.opaque = true
     }
     
-    public required init(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
@@ -95,7 +95,7 @@ public class LindenmayerView: UIView {
         
         // Fit the path into our bounds
         var pathRect = CGPathGetBoundingBox(path)
-        var bounds = CGRectInset(self.bounds, CGFloat(self.unitLength), CGFloat(self.unitLength))
+        let bounds = CGRectInset(self.bounds, CGFloat(self.unitLength), CGFloat(self.unitLength))
         
         // First make sure the path is aligned with our origin
         var transform = CGAffineTransformMakeTranslation(-CGRectGetMinX(pathRect), -CGRectGetMinY(pathRect))
