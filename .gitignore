@@ -1,0 +1,6 @@
+# Swift playground files
+timeline.xctimeline
+playground.xcworkspace
+
+# macOS files
+.DS_Store
