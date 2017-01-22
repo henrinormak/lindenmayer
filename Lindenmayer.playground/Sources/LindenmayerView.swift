@@ -55,11 +55,11 @@ open class LindenmayerView: UIView {
     open override func draw(_ rect: CGRect) {
         super.draw(rect)
         
-        let ctx = UIGraphicsGetCurrentContext()
+        let ctx = UIGraphicsGetCurrentContext()!
         
         if let color = self.backgroundColor {
-            ctx?.setFillColor(color.cgColor)
-            ctx?.fill(rect)
+            ctx.setFillColor(color.cgColor)
+            ctx.fill(rect)
         }
         
         if self.rules.count == 0 {
@@ -99,23 +99,23 @@ open class LindenmayerView: UIView {
         
         // First make sure the path is aligned with our origin
         var transform = CGAffineTransform(translationX: -pathRect.minX, y: -pathRect.minY)
-        var finalPath = path.copy(using: &transform)
+        var finalPath = path.copy(using: &transform)!
         
         // Next, scale the path to fit snuggly in our path
-        pathRect = (finalPath?.boundingBoxOfPath)!
+        pathRect = finalPath.boundingBoxOfPath
         let scale = min(bounds.width / pathRect.width, bounds.height / pathRect.height)
         transform = CGAffineTransform(scaleX: scale, y: scale)
-        finalPath = finalPath?.copy(using: &transform)
+        finalPath = finalPath.copy(using: &transform)!
         
         // Finally, move the path to the correct origin
         transform = CGAffineTransform(translationX: bounds.minX, y: bounds.minY)
-        finalPath = finalPath?.copy(using: &transform)
+        finalPath = finalPath.copy(using: &transform)!
         
-        ctx?.addPath(finalPath!)
+        ctx.addPath(finalPath)
         
-        ctx?.setStrokeColor(self.strokeColor.cgColor)
-        ctx?.setLineWidth(self.strokeWidth)
-        ctx?.strokePath()
+        ctx.setStrokeColor(self.strokeColor.cgColor)
+        ctx.setLineWidth(self.strokeWidth)
+        ctx.strokePath()
     }
     
     fileprivate func degreesToRadians(_ value:Double) -> Double {
