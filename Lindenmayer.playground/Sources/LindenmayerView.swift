@@ -1,31 +1,31 @@
 import UIKit
 
-public class LindenmayerView: UIView {
-    public var rules: [LindenmayerRule] = [] {
+open class LindenmayerView: UIView {
+    open var rules: [LindenmayerRule] = [] {
         didSet {
             self.setNeedsDisplay()
         }
     }
     
-    public var unitLength: Double = 10 {
+    open var unitLength: Double = 10 {
         didSet {
             self.setNeedsDisplay()
         }
     }
     
-    public var initialState: State = State(0, CGPoint(x: 0, y: 0)) {        
+    open var initialState: State = State(0, CGPoint(x: 0, y: 0)) {        
         didSet {
             self.setNeedsDisplay()
         }
     }
     
-    public var strokeColor: UIColor = UIColor.blackColor() {
+    open var strokeColor: UIColor = UIColor.black {
         didSet {
             self.setNeedsDisplay()
         }
     }
     
-    public var strokeWidth: CGFloat = 2 {
+    open var strokeWidth: CGFloat = 2 {
         didSet {
             self.setNeedsDisplay()
         }
@@ -44,22 +44,22 @@ public class LindenmayerView: UIView {
     public override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.backgroundColor = UIColor.whiteColor()
-        self.opaque = true
+        self.backgroundColor = UIColor.white
+        self.isOpaque = true
     }
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
-    public override func drawRect(rect: CGRect) {
-        super.drawRect(rect)
+    open override func draw(_ rect: CGRect) {
+        super.draw(rect)
         
-        let ctx = UIGraphicsGetCurrentContext()
+        let ctx = UIGraphicsGetCurrentContext()!
         
         if let color = self.backgroundColor {
-            CGContextSetFillColorWithColor(ctx, color.CGColor)
-            CGContextFillRect(ctx, rect)
+            ctx.setFillColor(color.cgColor)
+            ctx.fill(rect)
         }
         
         if self.rules.count == 0 {
@@ -67,70 +67,70 @@ public class LindenmayerView: UIView {
         }
         
         // Go over the rules and draw out the path
-        let path = CGPathCreateMutable()
-        CGPathMoveToPoint(path, nil, 0, 0)
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: 0, y: 0))
         
         var state = [State]()
         var currentState = self.initialState
         
         for rule in self.rules {
             switch rule {
-            case .StoreState:
+            case .storeState:
                 state.append(currentState)
-            case .RestoreState:
+            case .restoreState:
                 currentState = state.removeLast()
-                CGPathMoveToPoint(path, nil, currentState.position.x, currentState.position.y)
-            case .Move:
+                path.move(to: currentState.position)
+            case .move:
                 currentState = self.calculateState(currentState, distance: self.unitLength)
-                CGPathMoveToPoint(path, nil, currentState.position.x, currentState.position.y)
-            case .Draw:
+                path.move(to: currentState.position)
+            case .draw:
                 currentState = self.calculateState(currentState, distance: self.unitLength)
-                CGPathAddLineToPoint(path, nil, currentState.position.x, currentState.position.y)
-            case .Turn(let direction, let angle):
+                path.addLine(to: currentState.position)
+            case .turn(let direction, let angle):
                 currentState = self.calculateState(currentState, angle: angle, direction: direction)
-            case .Ignore:
+            case .ignore:
                 break
             }
         }
         
         // Fit the path into our bounds
-        var pathRect = CGPathGetBoundingBox(path)
-        let bounds = CGRectInset(self.bounds, CGFloat(self.unitLength), CGFloat(self.unitLength))
+        var pathRect = path.boundingBox
+        let bounds = self.bounds.insetBy(dx: CGFloat(self.unitLength), dy: CGFloat(self.unitLength))
         
         // First make sure the path is aligned with our origin
-        var transform = CGAffineTransformMakeTranslation(-CGRectGetMinX(pathRect), -CGRectGetMinY(pathRect))
-        var finalPath = CGPathCreateCopyByTransformingPath(path, &transform)
+        var transform = CGAffineTransform(translationX: -pathRect.minX, y: -pathRect.minY)
+        var finalPath = path.copy(using: &transform)!
         
         // Next, scale the path to fit snuggly in our path
-        pathRect = CGPathGetPathBoundingBox(finalPath)
-        let scale = min(CGRectGetWidth(bounds) / CGRectGetWidth(pathRect), CGRectGetHeight(bounds) / CGRectGetHeight(pathRect))
-        transform = CGAffineTransformMakeScale(scale, scale)
-        finalPath = CGPathCreateCopyByTransformingPath(finalPath, &transform)
+        pathRect = finalPath.boundingBoxOfPath
+        let scale = min(bounds.width / pathRect.width, bounds.height / pathRect.height)
+        transform = CGAffineTransform(scaleX: scale, y: scale)
+        finalPath = finalPath.copy(using: &transform)!
         
         // Finally, move the path to the correct origin
-        transform = CGAffineTransformMakeTranslation(CGRectGetMinX(bounds), CGRectGetMinY(bounds))
-        finalPath = CGPathCreateCopyByTransformingPath(finalPath, &transform)
+        transform = CGAffineTransform(translationX: bounds.minX, y: bounds.minY)
+        finalPath = finalPath.copy(using: &transform)!
         
-        CGContextAddPath(ctx, finalPath)
+        ctx.addPath(finalPath)
         
-        CGContextSetStrokeColorWithColor(ctx, self.strokeColor.CGColor)
-        CGContextSetLineWidth(ctx, self.strokeWidth)
-        CGContextStrokePath(ctx)
+        ctx.setStrokeColor(self.strokeColor.cgColor)
+        ctx.setLineWidth(self.strokeWidth)
+        ctx.strokePath()
     }
     
-    private func degreesToRadians(value:Double) -> Double {
+    fileprivate func degreesToRadians(_ value:Double) -> Double {
         return value * M_PI / 180.0
     }
     
-    private func calculateState(state: State, distance: Double) -> State {
+    fileprivate func calculateState(_ state: State, distance: Double) -> State {
         let x = state.position.x + CGFloat(distance * cos(self.degreesToRadians(state.angle)))
         let y = state.position.y + CGFloat(distance * sin(self.degreesToRadians(state.angle)))
         
         return State(state.angle, CGPoint(x: x, y: y))
     }
     
-    private func calculateState(state: State, angle: Double, direction: LindenmayerDirection) -> State {
-        if direction == .Left {
+    fileprivate func calculateState(_ state: State, angle: Double, direction: LindenmayerDirection) -> State {
+        if direction == .left {
             return State(state.angle - angle, state.position)
         }
         
