@@ -13,17 +13,17 @@ import UIKit
 
 //: The code is split into two files, a view that can render a set of rules constructed from an L-System
 //: And a struct defining the system itself, which can be expanded into an array of rules for a given amount of generations
-let view = LindenmayerView(frame: CGRectMake(0, 0, 600, 600))
+let view = LindenmayerView(frame: CGRect(x: 0, y: 0, width: 600, height: 600))
 view.strokeWidth = 1
 
 //: ## Sierpinski triangle
 let sierpinski = Lindenmayer(start: "A",
                              rules: ["A": "B-A-B",
                                      "B": "A+B+A"],
-                             variables: ["A": .Draw,
-                                        "B": .Draw,
-                                        "+": .Turn(.Left, 60),
-                                        "-": .Turn(.Right, 60)])
+                             variables: ["A": .draw,
+                                        "B": .draw,
+                                        "+": .turn(.left, 60),
+                                        "-": .turn(.right, 60)])
 
 view.initialState = LindenmayerView.State(0, CGPoint(x: 0, y: 0))
 view.rules = sierpinski.expand(8)
@@ -32,10 +32,10 @@ view.rules = sierpinski.expand(8)
 let plant = Lindenmayer(start: "X",
                         rules: ["X": "F-[[X]+X]+F[+FX]-X",
                                 "F" : "FF"],
-                        variables: ["F": .Draw,
-                                    "X": .Ignore,
-                                    "-": .Turn(.Left, 25),
-                                    "+": .Turn(.Right, 25)])
+                        variables: ["F": .draw,
+                                    "X": .ignore,
+                                    "-": .turn(.left, 25),
+                                    "+": .turn(.right, 25)])
 
 view.initialState = LindenmayerView.State(-90, CGPoint(x: 0, y: 0))
 view.rules = plant.expand(6)
@@ -43,24 +43,24 @@ view.rules = plant.expand(6)
 //: ## Dragon curve
 let dragonCurve = Lindenmayer(start: "FX",
                               rules: ["X": "X+YF+", "Y": "-FX-Y"],
-                              variables: ["X": .Ignore, "Y": .Ignore,
-                                          "F": .Draw,
-                                          "-": .Turn(.Left, 90),
-                                          "+": .Turn(.Right, 90)])
+                              variables: ["X": .ignore, "Y": .ignore,
+                                          "F": .draw,
+                                          "-": .turn(.left, 90),
+                                          "+": .turn(.right, 90)])
 
 view.rules = dragonCurve.expand(10)
 
 //: ## Pythagoras Tree
 let pythagoras = Lindenmayer(start: "0",
                              rules: ["1": "11", "0": "1[-0]+0"],
-                             variables: ["1": .Draw, "0": .Draw, "-": .Turn(.Left, 45), "+": .Turn(.Right, 45)])
+                             variables: ["1": .draw, "0": .draw, "-": .turn(.left, 45), "+": .turn(.right, 45)])
 
 view.rules = pythagoras.expand(10)
 
 //: ## Koch curve
 let koch = Lindenmayer(start: "F",
                         rules: ["F": "F+F-F-F+F"],
-                        variables: ["F" : .Draw, "+": .Turn(.Left, 90), "-": .Turn(.Right, 90)])
+                        variables: ["F" : .draw, "+": .turn(.left, 90), "-": .turn(.right, 90)])
 
 view.initialState = LindenmayerView.State(0, CGPoint(x: 0, y: 0))
 view.rules = koch.expand(4)

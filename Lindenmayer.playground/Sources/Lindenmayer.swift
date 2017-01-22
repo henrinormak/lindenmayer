@@ -2,33 +2,33 @@
 import Foundation
 
 public enum LindenmayerDirection: Equatable {
-    case Right
-    case Left
+    case right
+    case left
 }
 
 public enum LindenmayerRule: Equatable, CustomStringConvertible {
-    case Move
-    case Draw
-    case Turn(LindenmayerDirection, Double)
-    case StoreState
-    case RestoreState
-    case Ignore
+    case move
+    case draw
+    case turn(LindenmayerDirection, Double)
+    case storeState
+    case restoreState
+    case ignore
     
     public var description: String {
         switch self {
-            case Move:
+            case .move:
                 return "Move"
-            case Draw:
+            case .draw:
                 return "Draw"
-            case Turn(.Right, let angle):
+            case .turn(.right, let angle):
                 return "Turn right by \(angle)°"
-            case Turn(.Left, let angle):
+            case .turn(.left, let angle):
                 return "Turn left by \(angle)°"
-            case StoreState:
+            case .storeState:
                 return "["
-            case RestoreState:
+            case .restoreState:
                 return "]"
-            case Ignore:
+            case .ignore:
                 return ""
         }
     }
@@ -36,7 +36,7 @@ public enum LindenmayerRule: Equatable, CustomStringConvertible {
 
 public func ==(a: LindenmayerDirection, b: LindenmayerDirection) -> Bool {
     switch (a, b) {
-    case (.Right, .Right), (.Left, .Left):
+    case (.right, .right), (.left, .left):
         return true
     default:
         return false
@@ -45,9 +45,9 @@ public func ==(a: LindenmayerDirection, b: LindenmayerDirection) -> Bool {
 
 public func ==(a: LindenmayerRule, b: LindenmayerRule) -> Bool {
     switch (a, b) {
-        case (.Move, .Move), (.Draw, .Draw), (.Ignore, .Ignore), (.StoreState, .StoreState), (.RestoreState, .RestoreState):
+        case (.move, .move), (.draw, .draw), (.ignore, .ignore), (.storeState, .storeState), (.restoreState, .restoreState):
             return true
-        case (.Turn(let ad, let aa), .Turn(let bd, let ba)) where ad == bd && aa == ba:
+        case (.turn(let ad, let aa), .turn(let bd, let ba)) where ad == bd && aa == ba:
             return true
         default:
             return false
@@ -67,11 +67,11 @@ public struct Lindenmayer {
         
         // Add the two default state storing values
         if self.variables["["] == nil {
-            self.variables["["] = .StoreState
+            self.variables["["] = .storeState
         }
         
         if self.variables["]"] == nil {
-            self.variables["]"] = .RestoreState
+            self.variables["]"] = .restoreState
         }
     }
     
@@ -82,7 +82,7 @@ public struct Lindenmayer {
     ///  :param:    generations - Number of expansions to make
     ///  :returns:  Expanded state
     ///
-    public func expandedString(generations: Int) -> String {
+    public func expandedString(_ generations: Int) -> String {
         return self.evolve(generations, state: self.start)
     }
     
@@ -93,12 +93,12 @@ public struct Lindenmayer {
     ///  :param:    state - A state to convert
     ///  :returns:  A list of rules that correspond to the state
     ///
-    public func expand(generations: Int) -> [LindenmayerRule] {
+    public func expand(_ generations: Int) -> [LindenmayerRule] {
         let state = self.evolve(generations, state: self.start)
         
         var result = [LindenmayerRule]()
         for character in state.characters {
-            if let rule = self.variables[String(character)] where rule != .Ignore {
+            if let rule = self.variables[String(character)], rule != .ignore {
                 result.append(rule)
             }
         }
@@ -106,7 +106,7 @@ public struct Lindenmayer {
         return result
     }
     
-    private func evolve(generations: Int, state: String) -> String {
+    fileprivate func evolve(_ generations: Int, state: String) -> String {
         // End condition for recursion
         if (generations < 1) {
             return state
